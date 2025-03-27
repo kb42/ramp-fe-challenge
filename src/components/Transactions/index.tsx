@@ -4,8 +4,8 @@ import { SetTransactionApprovalParams } from "src/utils/types"
 import { TransactionPane } from "./TransactionPane"
 import { SetTransactionApprovalFunction, TransactionsComponent } from "./types"
 
-export const Transactions: TransactionsComponent = ({ transactions }) => {
-  const { fetchWithoutCache, loading } = useCustomFetch()
+export const Transactions: TransactionsComponent = ({ transactions, updateTransactionApproval }) => {
+  const { fetchWithoutCache, loading, clearCacheByEndpoint } = useCustomFetch()
 
   const setTransactionApproval = useCallback<SetTransactionApprovalFunction>(
     async ({ transactionId, newValue }) => {
@@ -13,8 +13,14 @@ export const Transactions: TransactionsComponent = ({ transactions }) => {
         transactionId,
         value: newValue,
       })
+
+      // bug 7: fixed transaction approval persistence by clearing cache for transaction endpoints
+      clearCacheByEndpoint(["paginatedTransactions", "transactionsByEmployee"])
+
+      // Update the transaction in both views
+      updateTransactionApproval(transactionId, newValue)
     },
-    [fetchWithoutCache]
+    [fetchWithoutCache, clearCacheByEndpoint, updateTransactionApproval]
   )
 
   if (transactions === null) {

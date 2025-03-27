@@ -19,6 +19,31 @@ export function App() {
     [paginatedTransactions, transactionsByEmployee]
   )
 
+  const updateTransactionApproval = useCallback((transactionId: string, newValue: boolean) => {
+    // Update paginated transactions if they exist
+    if (paginatedTransactions) {
+      const updatedPaginatedTransactions = {
+        ...paginatedTransactions,
+        data: paginatedTransactions.data.map(transaction =>
+          transaction.id === transactionId
+            ? { ...transaction, approved: newValue }
+            : transaction
+        )
+      }
+      paginatedTransactionsUtils.setData(updatedPaginatedTransactions)
+    }
+
+    // Update filtered transactions if they exist
+    if (transactionsByEmployee) {
+      const updatedFilteredTransactions = transactionsByEmployee.map(transaction =>
+        transaction.id === transactionId
+          ? { ...transaction, approved: newValue }
+          : transaction
+      )
+      transactionsByEmployeeUtils.setData(updatedFilteredTransactions)
+    }
+  }, [paginatedTransactions, transactionsByEmployee, paginatedTransactionsUtils, transactionsByEmployeeUtils])
+
   const loadAllTransactions = useCallback(async () => {
     setIsLoading(true)
     transactionsByEmployeeUtils.invalidateData()
@@ -51,7 +76,7 @@ export function App() {
         <hr className="RampBreak--l" />
 
         <InputSelect<Employee>
-          isLoading={isLoading}
+          isLoading={employeeUtils.loading}
           defaultValue={EMPTY_EMPLOYEE}
           items={employees === null ? [] : [EMPTY_EMPLOYEE, ...employees]}
           label="Filter by employee"
@@ -65,21 +90,28 @@ export function App() {
               return
             }
 
-            await loadTransactionsByEmployee(newValue.id)
+            if (newValue.id === "") {
+              await loadAllTransactions()
+            } else {
+              await loadTransactionsByEmployee(newValue.id)
+            }
           }}
         />
 
         <div className="RampBreak--l" />
 
         <div className="RampGrid">
-          <Transactions transactions={transactions} />
+          <Transactions 
+            transactions={transactions} 
+            updateTransactionApproval={updateTransactionApproval}
+          />
 
-          {transactions !== null && (
+          {transactions !== null && paginatedTransactions !== null && paginatedTransactions.nextPage !== null && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}
               onClick={async () => {
-                await loadAllTransactions()
+                await paginatedTransactionsUtils.fetchAll()
               }}
             >
               View More

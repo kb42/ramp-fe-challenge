@@ -119,11 +119,10 @@ export function InputSelect<TItem>({
 
 const getDropdownPosition: GetDropdownPositionFn = (target) => {
   if (target instanceof Element) {
-    const { top, left } = target.getBoundingClientRect()
-    const { scrollY } = window
+    const { top, left, height } = target.getBoundingClientRect()
     return {
-      top: scrollY + top + 63,
-      left,
+      top: height, /* Position dropdown right below input element */
+      left: 0,
     }
   }
 

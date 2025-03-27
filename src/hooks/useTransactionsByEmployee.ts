@@ -25,5 +25,9 @@ export function useTransactionsByEmployee(): TransactionsByEmployeeResult {
     setTransactionsByEmployee(null)
   }, [])
 
-  return { data: transactionsByEmployee, loading, fetchById, invalidateData }
+  const setData = useCallback((data: Transaction[] | null) => {
+    setTransactionsByEmployee(data)
+  }, [])
+
+  return { data: transactionsByEmployee, loading, fetchById, invalidateData, setData }
 }

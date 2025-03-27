@@ -4,6 +4,7 @@ type UseTypeBaseResult<TValue> = {
   data: TValue
   loading: boolean
   invalidateData: () => void
+  setData: (data: TValue) => void
 }
 
 type UseTypeBaseAllResult<TValue> = UseTypeBaseResult<TValue> & {

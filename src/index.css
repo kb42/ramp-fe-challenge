@@ -81,6 +81,7 @@ hr.RampBreak--l {
 
 .RampInputSelect--root {
   width: 100%;
+  position: relative; /* makes dropdown position relative to this container */
 }
 
 .RampInputSelect--input {
@@ -92,7 +93,7 @@ hr.RampBreak--l {
 
 .RampInputSelect--dropdown-container {
   display: none;
-  position: fixed;
+  position: absolute; /* bug 1: select dropdown changed from 'fixed' to solve problem */
   width: 100%;
   max-width: 700px;
   border: 1px solid var(--color-darker-shade);
@@ -100,6 +101,7 @@ hr.RampBreak--l {
   max-height: 16rem;
   overflow: auto;
   box-shadow: rgb(0 0 0 / 10%) 0px 0px 1px, rgb(0 0 0 / 13%) 0px 4px 8px;
+  z-index: 1000; /* ensures dropdown appears above other content */
 }
 
 .RampInputSelect--dropdown-container-opened {
